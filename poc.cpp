@@ -4,10 +4,13 @@
 #include "bgthread.h"
 #include <thread>
 #include <iostream>
+#include <queue>
 
 std::condition_variable cv;
 std::mutex mutex;
 bool ready = false;
+std::queue<int, std::vector<int> > messages;
+int gElements = 0;
 
 void *perform_checkpoint() {
     std::unique_lock<std::mutex> lock(mutex);
@@ -16,7 +19,9 @@ void *perform_checkpoint() {
         cv.wait(lock);
     }
     // perform the actual checkpoint logic
-    std::cout << "Performed checkpoint\n";
+    for (int i = 0; i < gElements; ++i) {
+        std :: cout << messages.front() << " ";
+    }
     return nullptr;
 }
 
@@ -25,6 +30,7 @@ int main() {
     int count = 0;
     while (count < 100) {
         count++;
+        messages.push(count);
         std :: cout << "\nMain thread incrementing counter\n";
         if (count == 50) {
             std::lock_guard<std::mutex> lock(mutex);
