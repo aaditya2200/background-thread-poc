@@ -3,6 +3,7 @@
 //
 #include "bgthread.h"
 #include <thread>
+#include <condition_variable>
 #include <iostream>
 #include <queue>
 
@@ -33,6 +34,7 @@ int main() {
         messages.push(count);
         std :: cout << "\nMain thread incrementing counter\n";
         if (count == 50) {
+		gElements=50;
             std::lock_guard<std::mutex> lock(mutex);
             ready = true;
             cv.notify_one();
